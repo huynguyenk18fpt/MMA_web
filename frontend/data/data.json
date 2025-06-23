@@ -1,0 +1,599 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "role": "User",
+      "status": "Active",
+      "isBanned": false,
+      "isMuted": false,
+      "joinDate": "2024-01-15",
+      "lastLogin": "2024-01-20 14:30:00"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "role": "Author",
+      "status": "Active",
+      "isBanned": false,
+      "isMuted": true,
+      "muteReason": "Spam comments",
+      "mutedUntil": "2024-02-15",
+      "joinDate": "2024-01-20",
+      "lastLogin": "2024-01-20 13:15:00"
+    },
+    {
+      "id": 3,
+      "name": "Mike Johnson",
+      "email": "mike@example.com",
+      "role": "Moderator",
+      "status": "Banned",
+      "isBanned": true,
+      "isMuted": false,
+      "banReason": "Spam content",
+      "bannedUntil": "2024-03-15",
+      "joinDate": "2024-02-01",
+      "lastLogin": "2024-01-19 16:45:00"
+    },
+    {
+      "id": 4,
+      "name": "Sarah Wilson",
+      "email": "sarah@example.com",
+      "role": "User",
+      "status": "Active",
+      "isBanned": false,
+      "isMuted": false,
+      "joinDate": "2024-02-10",
+      "lastLogin": "2024-01-20 12:20:00"
+    },
+    {
+      "id": 5,
+      "name": "Tom Brown",
+      "email": "tom@example.com",
+      "role": "Author",
+      "status": "Inactive",
+      "isBanned": false,
+      "isMuted": false,
+      "joinDate": "2024-02-15",
+      "lastLogin": "2024-01-18 10:30:00"
+    },
+    {
+      "id": 6,
+      "name": "Alice Cooper",
+      "email": "alice@example.com",
+      "role": "User",
+      "status": "Active",
+      "isBanned": false,
+      "isMuted": false,
+      "joinDate": "2024-01-25",
+      "lastLogin": "2024-01-20 16:45:00"
+    },
+    {
+      "id": 7,
+      "name": "Bob Wilson",
+      "email": "bob@example.com",
+      "role": "Author",
+      "status": "Active",
+      "isBanned": false,
+      "isMuted": false,
+      "joinDate": "2024-02-05",
+      "lastLogin": "2024-01-20 11:20:00"
+    }
+  ],
+  "reports": [
+    {
+      "id": 1,
+      "type": "content",
+      "title": "Inappropriate Content",
+      "description": "Story contains violent content not suitable for general audience",
+      "reportedBy": "user123",
+      "reportedUser": "author_mike",
+      "contentId": "story_456",
+      "contentTitle": "Dark Adventure",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2024-01-20 14:30:00",
+      "category": "Violence",
+      "resolution": null
+    },
+    {
+      "id": 2,
+      "type": "user",
+      "title": "Harassment",
+      "description": "User is sending inappropriate messages to other users",
+      "reportedBy": "user456",
+      "reportedUser": "baduser789",
+      "contentId": null,
+      "contentTitle": null,
+      "status": "investigating",
+      "priority": "urgent",
+      "createdAt": "2024-01-20 13:15:00",
+      "category": "Harassment",
+      "resolution": null
+    },
+    {
+      "id": 3,
+      "type": "spam",
+      "title": "Spam Content",
+      "description": "User is posting repetitive promotional content",
+      "reportedBy": "user789",
+      "reportedUser": "spammer123",
+      "contentId": "comment_789",
+      "contentTitle": "Promotional Comment",
+      "status": "resolved",
+      "priority": "medium",
+      "createdAt": "2024-01-19 16:45:00",
+      "category": "Spam",
+      "resolution": "Content removed and user warned"
+    },
+    {
+      "id": 4,
+      "type": "copyright",
+      "title": "Copyright Violation",
+      "description": "Story appears to be copied from another source",
+      "reportedBy": "user101",
+      "reportedUser": "copycat456",
+      "contentId": "story_123",
+      "contentTitle": "Copied Story",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2024-01-19 12:20:00",
+      "category": "Copyright",
+      "resolution": null
+    },
+    {
+      "id": 5,
+      "type": "content",
+      "title": "Inappropriate Language",
+      "description": "Story contains excessive profanity",
+      "reportedBy": "user202",
+      "reportedUser": "author_xyz",
+      "contentId": "story_789",
+      "contentTitle": "Street Tales",
+      "status": "investigating",
+      "priority": "medium",
+      "createdAt": "2024-01-18 09:30:00",
+      "category": "Language",
+      "resolution": null
+    }
+  ],
+  "content": [
+    {
+      "id": 1,
+      "type": "story",
+      "title": "Dark Adventure Chronicles",
+      "author": "author_mike",
+      "content": "A thrilling adventure story with some questionable content that has been reported by multiple users for containing violent scenes...",
+      "status": "flagged",
+      "reason": "Violence",
+      "reportCount": 3,
+      "createdAt": "2024-01-20 14:30:00",
+      "lastModified": "2024-01-20 15:45:00",
+      "genre": "Fantasy",
+      "wordCount": 2340,
+      "moderationNote": null
+    },
+    {
+      "id": 2,
+      "type": "comment",
+      "title": "Comment on 'Magic Kingdom'",
+      "author": "user123",
+      "content": "This story is terrible and the author should stop writing. Nobody wants to read this garbage...",
+      "status": "reported",
+      "reason": "Harassment",
+      "reportCount": 2,
+      "createdAt": "2024-01-20 13:15:00",
+      "lastModified": "2024-01-20 13:15:00",
+      "parentContent": "Magic Kingdom",
+      "moderationNote": null
+    },
+    {
+      "id": 3,
+      "type": "story",
+      "title": "Copied Adventure",
+      "author": "copycat456",
+      "content": "This appears to be copied from another popular story. The plot, characters, and even dialogue are identical to 'Famous Adventure' by well-known author...",
+      "status": "under_review",
+      "reason": "Copyright",
+      "reportCount": 1,
+      "createdAt": "2024-01-19 16:45:00",
+      "lastModified": "2024-01-20 10:30:00",
+      "genre": "Adventure",
+      "wordCount": 1890,
+      "moderationNote": "Investigating copyright claims"
+    },
+    {
+      "id": 4,
+      "type": "story",
+      "title": "Spam Promotional Story",
+      "author": "spammer123",
+      "content": "Check out my website for more amazing content at www.spam-site.com. Don't forget to subscribe and buy my premium content...",
+      "status": "flagged",
+      "reason": "Spam",
+      "reportCount": 5,
+      "createdAt": "2024-01-19 12:20:00",
+      "lastModified": "2024-01-19 12:20:00",
+      "genre": "Other",
+      "wordCount": 150,
+      "moderationNote": null
+    },
+    {
+      "id": 5,
+      "type": "story",
+      "title": "Romantic Evening",
+      "author": "romance_writer",
+      "content": "A beautiful love story between two characters who meet in unexpected circumstances...",
+      "status": "approved",
+      "reason": null,
+      "reportCount": 0,
+      "createdAt": "2024-01-18 14:20:00",
+      "lastModified": "2024-01-18 14:20:00",
+      "genre": "Romance",
+      "wordCount": 3200,
+      "moderationNote": "Content approved after review"
+    }
+  ],
+  "genres": [
+    {
+      "id": 1,
+      "name": "Fantasy",
+      "description": "Magical and mythical stories",
+      "storyCount": 1234,
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "Romance",
+      "description": "Love and relationship stories",
+      "storyCount": 987,
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Adventure",
+      "description": "Action-packed adventures",
+      "storyCount": 756,
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name": "Mystery",
+      "description": "Suspenseful mystery stories",
+      "storyCount": 543,
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "name": "Sci-Fi",
+      "description": "Science fiction stories",
+      "storyCount": 432,
+      "isActive": true
+    },
+    {
+      "id": 6,
+      "name": "Horror",
+      "description": "Scary and thrilling stories",
+      "storyCount": 321,
+      "isActive": false
+    },
+    {
+      "id": 7,
+      "name": "Comedy",
+      "description": "Funny and humorous stories",
+      "storyCount": 289,
+      "isActive": true
+    },
+    {
+      "id": 8,
+      "name": "Drama",
+      "description": "Emotional and dramatic stories",
+      "storyCount": 445,
+      "isActive": true
+    }
+  ],
+  "misassignedStories": [
+    {
+      "id": 1,
+      "title": "Dragon's Quest",
+      "author": "author_mike",
+      "currentGenre": "Romance",
+      "suggestedGenre": "Fantasy",
+      "reason": "Contains magical elements and dragons",
+      "confidence": 95
+    },
+    {
+      "id": 2,
+      "title": "Space Explorer",
+      "author": "sci_writer",
+      "currentGenre": "Adventure",
+      "suggestedGenre": "Sci-Fi",
+      "reason": "Set in space with futuristic technology",
+      "confidence": 88
+    },
+    {
+      "id": 3,
+      "title": "Love in the City",
+      "author": "romance_author",
+      "currentGenre": "Mystery",
+      "suggestedGenre": "Romance",
+      "reason": "Focuses on romantic relationships",
+      "confidence": 92
+    },
+    {
+      "id": 4,
+      "title": "Detective Story",
+      "author": "mystery_writer",
+      "currentGenre": "Drama",
+      "suggestedGenre": "Mystery",
+      "reason": "Contains investigation and crime solving",
+      "confidence": 89
+    }
+  ],
+  "userActivities": [
+    {
+      "id": 1,
+      "userId": 1,
+      "type": "login",
+      "description": "User logged in",
+      "timestamp": "2024-01-20 14:30:00",
+      "ipAddress": "192.168.1.1",
+      "userAgent": "Chrome/120.0.0.0"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "type": "story_post",
+      "description": "Posted new story: 'Dragon Adventure'",
+      "timestamp": "2024-01-20 13:15:00",
+      "contentId": "story_123",
+      "contentTitle": "Dragon Adventure"
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "type": "comment",
+      "description": "Commented on 'Magic Kingdom'",
+      "timestamp": "2024-01-20 12:45:00",
+      "contentId": "story_456",
+      "contentTitle": "Magic Kingdom"
+    },
+    {
+      "id": 4,
+      "userId": 3,
+      "type": "report",
+      "description": "Reported inappropriate content",
+      "timestamp": "2024-01-20 11:20:00",
+      "reportId": 1
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "type": "login",
+      "description": "User logged in",
+      "timestamp": "2024-01-19 16:45:00",
+      "ipAddress": "192.168.1.1",
+      "userAgent": "Chrome/120.0.0.0"
+    }
+  ],
+  "warningTemplates": [
+    {
+      "id": "spam",
+      "title": "Spam Content",
+      "content": "Your recent activity has been flagged as spam. Please review our community guidelines and ensure your content adds value to the community."
+    },
+    {
+      "id": "inappropriate",
+      "title": "Inappropriate Content",
+      "content": "Your content has been reported as inappropriate. Please ensure all future posts comply with our community standards."
+    },
+    {
+      "id": "harassment",
+      "title": "Harassment Warning",
+      "content": "Your behavior towards other users has been reported as harassment. This is a formal warning to maintain respectful interactions."
+    },
+    {
+      "id": "copyright",
+      "title": "Copyright Violation",
+      "content": "Your content appears to violate copyright laws. Please ensure all content is original or properly attributed."
+    }
+  ],
+  "sentWarnings": [
+    {
+      "id": 1,
+      "userId": 1,
+      "userName": "John Doe",
+      "templateId": "spam",
+      "customContent": "Your recent activity has been flagged as spam. Please review our community guidelines.",
+      "sentAt": "2024-01-20 10:30:00",
+      "sentBy": "admin"
+    },
+    {
+      "id": 2,
+      "userId": 3,
+      "userName": "Mike Johnson",
+      "templateId": "inappropriate",
+      "customContent": "Your content has been reported as inappropriate. Please ensure compliance with community standards.",
+      "sentAt": "2024-01-19 14:20:00",
+      "sentBy": "admin"
+    }
+  ],
+  "announcements": [
+    {
+      "id": 1,
+      "title": "Platform Maintenance Scheduled",
+      "content": "We will be performing scheduled maintenance on Sunday from 2:00 AM to 6:00 AM UTC. During this time, the platform may be temporarily unavailable.",
+      "recipients": "All Users",
+      "recipientGroups": ["all"],
+      "status": "Sent",
+      "priority": "normal",
+      "sentAt": "2024-01-20 10:00:00",
+      "readCount": 8234,
+      "createdBy": "admin"
+    },
+    {
+      "id": 2,
+      "title": "New Content Guidelines",
+      "content": "Please review our updated content guidelines. All authors must ensure their stories comply with the new standards effective immediately.",
+      "recipients": "Authors",
+      "recipientGroups": ["authors"],
+      "status": "Sent",
+      "priority": "high",
+      "sentAt": "2024-01-19 14:30:00",
+      "readCount": 892,
+      "createdBy": "admin"
+    },
+    {
+      "id": 3,
+      "title": "Moderation Tools Update",
+      "content": "New moderation features are now available in your dashboard. Please familiarize yourself with the updated tools.",
+      "recipients": "Moderators",
+      "recipientGroups": ["moderators"],
+      "status": "Draft",
+      "priority": "normal",
+      "sentAt": null,
+      "readCount": 0,
+      "createdBy": "admin"
+    }
+  ],
+  "recipientGroups": [
+    {
+      "id": "all",
+      "label": "All Users",
+      "count": 12543
+    },
+    {
+      "id": "authors",
+      "label": "Authors",
+      "count": 1234
+    },
+    {
+      "id": "moderators",
+      "label": "Moderators",
+      "count": 45
+    },
+    {
+      "id": "admins",
+      "label": "Admins",
+      "count": 8
+    }
+  ],
+  "platformStats": {
+    "overview": {
+      "totalUsers": 12543,
+      "activeUsers": 8921,
+      "totalStories": 4567,
+      "totalReads": 234567,
+      "totalComments": 45678,
+      "totalReports": 234,
+      "bannedUsers": 156,
+      "mutedUsers": 89
+    },
+    "trends": {
+      "userGrowth": "+12%",
+      "storyGrowth": "+8%",
+      "readGrowth": "+15%",
+      "reportGrowth": "-5%"
+    },
+    "monthlyData": [
+      {
+        "month": "Jan",
+        "users": 1200,
+        "stories": 450,
+        "reads": 23400,
+        "reports": 45
+      },
+      {
+        "month": "Feb",
+        "users": 1350,
+        "stories": 520,
+        "reads": 26800,
+        "reports": 38
+      },
+      {
+        "month": "Mar",
+        "users": 1480,
+        "stories": 580,
+        "reads": 29200,
+        "reports": 42
+      },
+      {
+        "month": "Apr",
+        "users": 1620,
+        "stories": 640,
+        "reads": 32100,
+        "reports": 35
+      },
+      {
+        "month": "May",
+        "users": 1750,
+        "stories": 690,
+        "reads": 34500,
+        "reports": 29
+      },
+      {
+        "month": "Jun",
+        "users": 1890,
+        "stories": 750,
+        "reads": 37800,
+        "reports": 31
+      }
+    ],
+    "topContent": [
+      {
+        "id": 1,
+        "title": "Dragon's Quest Adventure",
+        "author": "author_mike",
+        "genre": "Fantasy",
+        "reads": 12500,
+        "status": "Trending"
+      },
+      {
+        "id": 2,
+        "title": "Magic Kingdom Chronicles",
+        "author": "story_master",
+        "genre": "Adventure",
+        "reads": 9800,
+        "status": "Popular"
+      },
+      {
+        "id": 3,
+        "title": "Cyber Future Tales",
+        "author": "future_writer",
+        "genre": "Sci-Fi",
+        "reads": 8200,
+        "status": "Rising"
+      }
+    ]
+  },
+  "systemStatus": {
+    "server": "Online",
+    "database": "Healthy",
+    "cdn": "Active",
+    "lastBackup": "2 hours ago"
+  },
+  "recentActivity": [
+    {
+      "id": 1,
+      "type": "ban",
+      "description": "User @john_doe was banned for spam",
+      "timestamp": "2 hours ago",
+      "color": "blue"
+    },
+    {
+      "id": 2,
+      "type": "approval",
+      "description": "New story 'Dragon Quest' approved",
+      "timestamp": "4 hours ago",
+      "color": "green"
+    },
+    {
+      "id": 3,
+      "type": "warning",
+      "description": "Warning sent to @manga_lover",
+      "timestamp": "6 hours ago",
+      "color": "yellow"
+    }
+  ]
+}
