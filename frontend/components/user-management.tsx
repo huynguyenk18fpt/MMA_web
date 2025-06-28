@@ -19,7 +19,7 @@ export function UserManagement() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:555/api/users/")
+        const res = await fetch("http://localhost:555/api/admin/users/")
         if (!res.ok) throw new Error("Failed to fetch users")
         const rawData = await res.json()
 

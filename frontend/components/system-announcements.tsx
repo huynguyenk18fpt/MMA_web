@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,8 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Megaphone, Send } from "lucide-react"
+import { Megaphone, Send, Users, BookOpen, Shield, UserCog } from "lucide-react"
 import { useData } from "@/hooks/useData"
+
+const iconMap: Record<string, React.ElementType> = {
+  all: Users,
+  authors: BookOpen,
+  moderators: Shield,
+  admins: UserCog,
+}
 
 export function SystemAnnouncements() {
   const { data, addAnnouncement } = useData()
@@ -110,7 +119,7 @@ export function SystemAnnouncements() {
               <Label>Recipients</Label>
               <div className="space-y-3 mt-2">
                 {recipientGroups.map((group) => {
-                  const Icon = group.icon
+                  const Icon = iconMap[group.id] ?? Users
                   return (
                     <div key={group.id} className="flex items-center space-x-3">
                       <Checkbox
@@ -160,7 +169,7 @@ export function SystemAnnouncements() {
           <CardContent>
             <div className="space-y-4">
               {recipientGroups.map((group) => {
-                const Icon = group.icon
+                const Icon = iconMap[group.id] ?? Users
                 const isSelected = selectedRecipients.includes(group.id)
                 return (
                   <div

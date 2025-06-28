@@ -14,8 +14,8 @@ interface LoginScreenProps {
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("admin@manga.com")
+  const [password, setPassword] = useState("admin123")
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,6 +57,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 id="email"
                 type="email"
                 placeholder="admin@manga.com"
+                
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

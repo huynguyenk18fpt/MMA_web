@@ -44,7 +44,7 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
     { id: "users", label: "View Users", icon: Users },
     { id: "reports", label: "Reports", icon: Flag },
-    { id: "content", label: "Content Moderation", icon: FileText },
+    { id: "content", label: "Content Management", icon: FileText },
     { id: "ban", label: "Ban/Unban", icon: UserX },
     { id: "warnings", label: "Send Warnings", icon: AlertTriangle },
     { id: "activity", label: "User Activity", icon: Activity },

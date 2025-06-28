@@ -12,64 +12,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, Edit, Eye, Flag, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 import { useData } from "@/hooks/useData"
 
-const mockContent = [
-  {
-    id: 1,
-    type: "story",
-    title: "Dark Adventure Chronicles",
-    author: "author_mike",
-    content: "A thrilling adventure story with some questionable content...",
-    status: "flagged",
-    reason: "Violence",
-    reportCount: 3,
-    createdAt: "2024-01-20 14:30:00",
-    lastModified: "2024-01-20 15:45:00",
-    genre: "Fantasy",
-    wordCount: 2340,
-  },
-  {
-    id: 2,
-    type: "comment",
-    title: "Comment on 'Magic Kingdom'",
-    author: "user123",
-    content: "This story is terrible and the author should stop writing...",
-    status: "reported",
-    reason: "Harassment",
-    reportCount: 2,
-    createdAt: "2024-01-20 13:15:00",
-    lastModified: "2024-01-20 13:15:00",
-    parentContent: "Magic Kingdom",
-  },
-  {
-    id: 3,
-    type: "story",
-    title: "Copied Adventure",
-    author: "copycat456",
-    content: "This appears to be copied from another popular story...",
-    status: "under_review",
-    reason: "Copyright",
-    reportCount: 1,
-    createdAt: "2024-01-19 16:45:00",
-    lastModified: "2024-01-20 10:30:00",
-    genre: "Adventure",
-    wordCount: 1890,
-  },
-  {
-    id: 4,
-    type: "story",
-    title: "Spam Promotional Story",
-    author: "spammer123",
-    content: "Check out my website for more amazing content at...",
-    status: "flagged",
-    reason: "Spam",
-    reportCount: 5,
-    createdAt: "2024-01-19 12:20:00",
-    lastModified: "2024-01-19 12:20:00",
-    genre: "Other",
-    wordCount: 150,
-  },
-]
-
 export function ContentModeration() {
   const { data, updateContent } = useData()
   const [content, setContent] = useState(data.content)

@@ -4,14 +4,12 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 const adminRoutes = require("./routes/adminRoutes");
-const userRoutes = require("./routes/userRoutes"); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use("/admin", adminRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 app.get("/", (req, res) => {
