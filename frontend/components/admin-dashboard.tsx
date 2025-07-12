@@ -2,28 +2,16 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
-  Users,
-  UserX,
-  AlertTriangle,
-  Activity,
-  UserCog,
-  Megaphone,
-  BarChart3,
-  Settings,
-  LogOut,
-  BookOpen,
-  Shield,
-  Flag,
-  FileText,
-  Tags,
+  Users, UserX, AlertTriangle, Activity, UserCog, Megaphone,
+  BarChart3, Settings, LogOut, BookOpen, Shield, Flag, FileText, Tags
 } from "lucide-react"
+
 import { UserManagement } from "@/components/user-management"
 import { BanUnbanUsers } from "@/components/ban-unban-users"
 import { SendWarnings } from "@/components/send-warnings"
 import { UserActivity } from "@/components/user-activity"
-import { AssignRoles } from "@/components/assign-roles"
 import { SystemAnnouncements } from "@/components/system-announcements"
 import { PlatformStats } from "@/components/platform-stats"
 import { ProfileSettings } from "@/components/profile-settings"
@@ -39,6 +27,12 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
   const [activeView, setActiveView] = useState("dashboard")
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+
+  const handleViewUserActivity = (userId: string) => {
+    setSelectedUserId(userId)
+    setActiveView("activity")
+  }
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -48,7 +42,6 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
     { id: "ban", label: "Ban/Unban", icon: UserX },
     { id: "warnings", label: "Send Warnings", icon: AlertTriangle },
     { id: "activity", label: "User Activity", icon: Activity },
-    { id: "roles", label: "Assign Roles", icon: UserCog },
     { id: "genres", label: "Genre Management", icon: Tags },
     { id: "announcements", label: "Announcements", icon: Megaphone },
     { id: "stats", label: "Statistics", icon: BarChart3 },
@@ -58,7 +51,7 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
   const renderContent = () => {
     switch (activeView) {
       case "users":
-        return <UserManagement />
+        return <UserManagement onViewActivity={handleViewUserActivity} />
       case "reports":
         return <ReportManagement />
       case "content":
@@ -68,9 +61,7 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
       case "warnings":
         return <SendWarnings />
       case "activity":
-        return <UserActivity />
-      case "roles":
-        return <AssignRoles />
+        return <UserActivity selectedUserId={selectedUserId ?? undefined} />
       case "genres":
         return <GenreManagement />
       case "announcements":
@@ -86,7 +77,6 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
@@ -105,7 +95,6 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
       </header>
 
       <div className="flex">
-        {/* Sidebar */}
         <aside className="w-64 bg-white shadow-sm min-h-screen">
           <nav className="p-4">
             <ul className="space-y-2">
@@ -127,8 +116,6 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
             </ul>
           </nav>
         </aside>
-
-        {/* Main Content */}
         <main className="flex-1 p-6">{renderContent()}</main>
       </div>
     </div>
@@ -137,7 +124,6 @@ export function AdminDashboard({ currentUser, onLogout }: AdminDashboardProps) {
 
 function DashboardOverview() {
   const { data } = useData()
-
   const stats = [
     {
       title: "Total Users",
@@ -157,7 +143,12 @@ function DashboardOverview() {
       change: data.platformStats.trends.reportGrowth,
       icon: AlertTriangle,
     },
-    { title: "Banned Users", value: data.platformStats.overview.bannedUsers.toString(), change: "+2%", icon: UserX },
+    {
+      title: "Banned Users",
+      value: data.platformStats.overview.bannedUsers.toString(),
+      change: "+2%",
+      icon: UserX,
+    },
   ]
 
   return (
@@ -185,53 +176,6 @@ function DashboardOverview() {
             </Card>
           )
         })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest admin actions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {data.recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-center gap-3">
-                  <div className={`w-2 h-2 bg-${activity.color}-500 rounded-full`}></div>
-                  <span className="text-sm">{activity.description}</span>
-                  <span className="text-xs text-gray-500 ml-auto">{activity.timestamp}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>System Status</CardTitle>
-            <CardDescription>Current system health</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Server Status</span>
-                <span className="text-sm text-green-600 font-medium">{data.systemStatus.server}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Database</span>
-                <span className="text-sm text-green-600 font-medium">{data.systemStatus.database}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">CDN</span>
-                <span className="text-sm text-green-600 font-medium">{data.systemStatus.cdn}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Backup</span>
-                <span className="text-sm text-blue-600 font-medium">Last: {data.systemStatus.lastBackup}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

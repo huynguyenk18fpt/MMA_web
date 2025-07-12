@@ -12,10 +12,6 @@ app.use(cors());
 app.use("/api/admin", adminRoutes);
 
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-})
-
 mongoose.connect(process.env.MONGO_URI, {
 }).then(() => {
   console.log("Connected to MongoDB");

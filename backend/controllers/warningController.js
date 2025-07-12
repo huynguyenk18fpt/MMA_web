@@ -12,20 +12,37 @@ exports.getAllWarningTemplate = async (req, res) => {
     }
 }
 
+exports.getAllSentWarning = async (req, res) => {
+    try {
+        const sentWarning = await warningService.getAllSentWarning()
+        res.status(200).json({ success: true,  message: "Get all sent warning successfully", sentWarning })
+    } catch (error) {
+        console.error("Error fetching sent warning:", error)
+        res.status(500).json({ success: false, message: "Internal server error" })
+    }
+}
+
+const mongoose = require("mongoose");
+
 exports.sendWarning = async (req, res) => {
   try {
     const { userId, templateId, customContent, sentBy } = req.body;
 
-    // Lấy thông tin user từ userId
-    const user = await User.findById(userId);
-    console.log(user)
+    console.log("userId:", userId, typeof userId)
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID format" });
+    }
+
+    const user = await User.findOne({ _id: new mongoose.Types.ObjectId(userId) });
+
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
     const newWarning = new SentWarning({
       userId: user._id,
-      userName: user.name, // ghi lại tên tĩnh tại thời điểm gửi
+      userName: user.name,
       templateId,
       customContent,
       sentBy

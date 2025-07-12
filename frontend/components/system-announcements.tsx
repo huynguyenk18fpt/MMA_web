@@ -1,68 +1,119 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Megaphone, Send, Users, BookOpen, Shield, UserCog } from "lucide-react"
-import { useData } from "@/hooks/useData"
+import { Megaphone, Send, Users, BookOpen } from "lucide-react"
 
 const iconMap: Record<string, React.ElementType> = {
   all: Users,
   authors: BookOpen,
-  moderators: Shield,
-  admins: UserCog,
+  user: Users,
 }
 
 export function SystemAnnouncements() {
-  const { data, addAnnouncement } = useData()
-  const recipientGroups = data.recipientGroups
-  const [announcements, setAnnouncements] = useState(data.announcements)
+  const [recipientGroups, setRecipientGroups] = useState<any[]>([])
+  const [announcements, setAnnouncements] = useState<any[]>([])
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
   const [priority, setPriority] = useState("normal")
 
-  const handleRecipientToggle = (groupId: string) => {
-    setSelectedRecipients((prev) => (prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]))
+  useEffect(() => {
+    fetchAnnouncements()
+    fetchRecipientGroups()
+  }, [])
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await fetch("http://localhost:555/api/admin/announcement/")
+      const data = await res.json()
+      setAnnouncements(data.announcements || [])
+    } catch (err) {
+      console.error("Failed to fetch announcements", err)
+    }
   }
 
-  const handleSendAnnouncement = () => {
+  const fetchRecipientGroups = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:555/api/admin/announcement/recipient-groups/"
+      )
+      const data = await res.json()
+      setRecipientGroups(data.groups || [])
+    } catch (err) {
+      console.error("Failed to fetch recipient groups", err)
+    }
+  }
+
+  const handleRecipientToggle = (groupId: string) => {
+    setSelectedRecipients((prev) =>
+      prev.includes(groupId)
+        ? prev.filter((id) => id !== groupId)
+        : [...prev, groupId]
+    )
+  }
+
+  const handleSendAnnouncement = async () => {
     if (!title || !content || selectedRecipients.length === 0) {
       alert("Please fill in all fields and select recipients")
       return
     }
 
+    const recipientLabels = selectedRecipients
+      .map((id) => recipientGroups.find((g) => g.id === id)?.label)
+      .join(", ")
+
     const newAnnouncement = {
       title,
       content,
-      recipients: selectedRecipients.map((id) => recipientGroups.find((g) => g.id === id)?.label).join(", "),
+      recipients: recipientLabels,
       recipientGroups: selectedRecipients,
       status: "Sent",
       priority,
-      sentAt: new Date().toISOString().replace("T", " ").substring(0, 19),
+      sentAt: new Date().toISOString(),
       readCount: 0,
-      createdBy: "admin",
+      createdBy: "admin01@example.com",
     }
 
-    addAnnouncement(newAnnouncement)
-    setAnnouncements(data.announcements)
+    try {
+      const res = await fetch("http://localhost:555/api/admin/announcement/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAnnouncement),
+      })
 
-    console.log("Sending announcement:", newAnnouncement)
-    alert("Announcement sent successfully!")
+      if (!res.ok) throw new Error("Failed to send announcement")
 
-    // Reset form
-    setTitle("")
-    setContent("")
-    setSelectedRecipients([])
-    setPriority("normal")
+      await fetchAnnouncements()
+      alert("Announcement sent successfully!")
+
+      // Reset form
+      setTitle("")
+      setContent("")
+      setSelectedRecipients([])
+      setPriority("normal")
+    } catch (err) {
+      console.error(err)
+      alert("Error sending announcement")
+    }
   }
 
   const getStatusColor = (status: string) => {
@@ -71,8 +122,6 @@ export function SystemAnnouncements() {
         return "bg-green-100 text-green-800"
       case "Draft":
         return "bg-yellow-100 text-yellow-800"
-      case "Scheduled":
-        return "bg-blue-100 text-blue-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
@@ -131,7 +180,7 @@ export function SystemAnnouncements() {
                         <Icon className="h-4 w-4" />
                         <span>{group.label}</span>
                         <Badge variant="outline" className="text-xs">
-                          {group.count.toLocaleString()}
+                          {group.count?.toLocaleString() ?? 0}
                         </Badge>
                       </label>
                     </div>
@@ -181,10 +230,14 @@ export function SystemAnnouncements() {
                         <Icon className="h-5 w-5" />
                         <div>
                           <p className="font-medium">{group.label}</p>
-                          <p className="text-sm text-gray-600">{group.count.toLocaleString()} users</p>
+                          <p className="text-sm text-gray-600">
+                            {group.count?.toLocaleString() ?? 0} users
+                          </p>
                         </div>
                       </div>
-                      {isSelected && <Badge className="bg-blue-100 text-blue-800">Selected</Badge>}
+                      {isSelected && (
+                        <Badge className="bg-blue-100 text-blue-800">Selected</Badge>
+                      )}
                     </div>
                   </div>
                 )
@@ -211,22 +264,40 @@ export function SystemAnnouncements() {
                 </tr>
               </thead>
               <tbody>
-                {announcements.map((announcement) => (
-                  <tr key={announcement.id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      <div>
-                        <p className="font-medium">{announcement.title}</p>
-                        <p className="text-sm text-gray-600 truncate max-w-xs">{announcement.content}</p>
-                      </div>
+                {announcements.length > 0 ? (
+                  announcements.map((announcement) => (
+                    <tr key={announcement._id} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-4">
+                        <div>
+                          <p className="font-medium">{announcement.title}</p>
+                          <p className="text-sm text-gray-600 truncate max-w-xs">
+                            {announcement.content}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">{announcement.recipients}</td>
+                      <td className="py-3 px-4">
+                        <Badge className={getStatusColor(announcement.status)}>
+                          {announcement.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {announcement.sentAt
+                          ? new Date(announcement.sentAt).toLocaleString()
+                          : "Not sent"}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {announcement.readCount?.toLocaleString() ?? 0}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-4 text-center text-gray-500">
+                      No announcements found.
                     </td>
-                    <td className="py-3 px-4 text-gray-600">{announcement.recipients}</td>
-                    <td className="py-3 px-4">
-                      <Badge className={getStatusColor(announcement.status)}>{announcement.status}</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-gray-600">{announcement.sentAt || "Not sent"}</td>
-                    <td className="py-3 px-4 text-gray-600">{announcement.readCount.toLocaleString()}</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -10,16 +10,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, Edit, Eye, Flag, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
-import { useData } from "@/hooks/useData"
 
 export function ContentModeration() {
-  const { data, updateContent } = useData()
-  const [content, setContent] = useState(data.content)
+  const [content, setContent] = useState([])
+  const [loading, setLoading] = useState(true)
   const [selectedContent, setSelectedContent] = useState<any>(null)
   const [moderationAction, setModerationAction] = useState("")
   const [moderationNote, setModerationNote] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("all")
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await fetch("http://localhost:555/api/admin/content/")
+        const json = await res.json()
+        if (json.success) {
+          setContent(json.data)
+        } else {
+          console.error("Failed to load content:", json.message)
+        }
+      } catch (error) {
+        console.error("Error fetching content:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchContent()
+  }, [])
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -55,7 +74,7 @@ export function ContentModeration() {
     }
   }
 
-  const handleModerationAction = () => {
+  const handleModerationAction = async () => {
     if (!selectedContent || !moderationAction) return
 
     let newStatus = selectedContent.status
@@ -74,11 +93,34 @@ export function ContentModeration() {
         break
     }
 
-    updateContent(selectedContent.id, { status: newStatus, moderationNote })
-    setContent(data.content)
+    try {
+      const res = await fetch(`http://localhost:555/api/admin/content/${selectedContent._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: newStatus,
+          moderationNote: moderationNote || ""
+        })
+      })
 
-    console.log("Moderation action:", moderationAction, "Content:", selectedContent.id, "Note:", moderationNote)
-    alert(`Content ${moderationAction}d successfully`)
+      const json = await res.json()
+
+      if (json.success) {
+        setContent((prev) =>
+          prev.map((item) =>
+            item._id === selectedContent._id
+              ? { ...item, status: newStatus, moderationNote }
+              : item
+          )
+        )
+        alert(`Content ${moderationAction}d successfully`)
+      } else {
+        alert("Failed to update content: " + json.message)
+      }
+    } catch (error) {
+      console.error("Error updating content:", error)
+      alert("Error updating content")
+    }
 
     setIsDialogOpen(false)
     setModerationAction("")
@@ -86,18 +128,20 @@ export function ContentModeration() {
     setSelectedContent(null)
   }
 
-  const filteredContent = content.filter((item) => {
+  const filteredContent = content.filter((item: any) => {
     if (activeTab === "all") return true
     return item.status === activeTab
   })
 
   const contentStats = {
     total: content.length,
-    flagged: content.filter((c) => c.status === "flagged").length,
-    reported: content.filter((c) => c.status === "reported").length,
-    under_review: content.filter((c) => c.status === "under_review").length,
-    removed: content.filter((c) => c.status === "removed").length,
+    flagged: content.filter((c: any) => c.status === "flagged").length,
+    reported: content.filter((c: any) => c.status === "reported").length,
+    under_review: content.filter((c: any) => c.status === "under_review").length,
+    removed: content.filter((c: any) => c.status === "removed").length,
   }
+
+  if (loading) return <p className="text-center text-gray-500">Loading content...</p>
 
   return (
     <div className="space-y-6">
@@ -108,61 +152,11 @@ export function ContentModeration() {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="text-sm text-gray-600">Total Content</p>
-                <p className="text-2xl font-bold">{contentStats.total}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Flag className="h-5 w-5 text-red-600" />
-              <div>
-                <p className="text-sm text-gray-600">Flagged</p>
-                <p className="text-2xl font-bold">{contentStats.flagged}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
-              <div>
-                <p className="text-sm text-gray-600">Reported</p>
-                <p className="text-2xl font-bold">{contentStats.reported}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Eye className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="text-sm text-gray-600">Under Review</p>
-                <p className="text-2xl font-bold">{contentStats.under_review}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-gray-600" />
-              <div>
-                <p className="text-sm text-gray-600">Removed</p>
-                <p className="text-2xl font-bold">{contentStats.removed}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-2"><FileText className="h-5 w-5 text-blue-600" /><div><p className="text-sm text-gray-600">Total Content</p><p className="text-2xl font-bold">{contentStats.total}</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-2"><Flag className="h-5 w-5 text-red-600" /><div><p className="text-sm text-gray-600">Flagged</p><p className="text-2xl font-bold">{contentStats.flagged}</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-600" /><div><p className="text-sm text-gray-600">Reported</p><p className="text-2xl font-bold">{contentStats.reported}</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-2"><Eye className="h-5 w-5 text-blue-600" /><div><p className="text-sm text-gray-600">Under Review</p><p className="text-2xl font-bold">{contentStats.under_review}</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-2"><XCircle className="h-5 w-5 text-gray-600" /><div><p className="text-sm text-gray-600">Removed</p><p className="text-2xl font-bold">{contentStats.removed}</p></div></div></CardContent></Card>
       </div>
 
       <Card>
@@ -170,7 +164,7 @@ export function ContentModeration() {
           <CardTitle>Content Management</CardTitle>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
-              <TabsTrigger value="all">All Content</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="flagged">Flagged</TabsTrigger>
               <TabsTrigger value="reported">Reported</TabsTrigger>
               <TabsTrigger value="under_review">Under Review</TabsTrigger>
@@ -193,34 +187,24 @@ export function ContentModeration() {
                 </tr>
               </thead>
               <tbody>
-                {filteredContent.map((item) => (
-                  <tr key={item.id} className="border-b hover:bg-gray-50">
+                {filteredContent.map((item: any) => (
+                  <tr key={item._id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <div>
                         <p className="font-medium">{item.title}</p>
                         <p className="text-sm text-gray-600 truncate max-w-xs">{item.content}</p>
                         {item.type === "story" && (
                           <div className="flex gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              {item.genre}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              {item.wordCount} words
-                            </Badge>
+                            <Badge variant="outline" className="text-xs">{item.genre}</Badge>
+                            <Badge variant="outline" className="text-xs">{item.wordCount} words</Badge>
                           </div>
                         )}
                       </div>
                     </td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline">{item.type}</Badge>
-                    </td>
+                    <td className="py-3 px-4"><Badge variant="outline">{item.type}</Badge></td>
                     <td className="py-3 px-4 text-gray-600">@{item.author}</td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline">{item.reason}</Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge className="bg-red-100 text-red-800">{item.reportCount}</Badge>
-                    </td>
+                    <td className="py-3 px-4"><Badge variant="outline">{item.reason}</Badge></td>
+                    <td className="py-3 px-4"><Badge className="bg-red-100 text-red-800">{item.reportCount}</Badge></td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(item.status)}
@@ -228,7 +212,7 @@ export function ContentModeration() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <Dialog open={isDialogOpen && selectedContent?.id === item.id} onOpenChange={setIsDialogOpen}>
+                      <Dialog open={isDialogOpen && selectedContent?._id === item._id} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" onClick={() => setSelectedContent(item)}>
                             <Edit className="h-4 w-4 mr-2" />
@@ -269,9 +253,7 @@ export function ContentModeration() {
                             <div>
                               <Label htmlFor="action">Moderation Action</Label>
                               <Select value={moderationAction} onValueChange={setModerationAction}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select action" />
-                                </SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Select action" /></SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="approve">Approve Content</SelectItem>
                                   <SelectItem value="edit">Request Edit</SelectItem>
@@ -293,12 +275,8 @@ export function ContentModeration() {
                             </div>
 
                             <div className="flex gap-2">
-                              <Button onClick={handleModerationAction} className="flex-1">
-                                Apply Action
-                              </Button>
-                              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">
-                                Cancel
-                              </Button>
+                              <Button onClick={handleModerationAction} className="flex-1">Apply Action</Button>
+                              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">Cancel</Button>
                             </div>
                           </div>
                         </DialogContent>

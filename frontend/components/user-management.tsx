@@ -7,8 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Search, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react"
 
-export function UserManagement() {
-  const [users, setUsers] = useState<any[]>([])
+interface User {
+  _id: string
+  name: string
+  email: string
+  role: string
+  avatar: string
+  verified: boolean
+  status: string
+  joinDate?: string
+}
+
+interface UserManagementProps {
+  onViewActivity?: (userId: string) => void
+}
+
+export function UserManagement({ onViewActivity }: UserManagementProps) {
+  const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -23,21 +38,8 @@ export function UserManagement() {
         if (!res.ok) throw new Error("Failed to fetch users")
         const rawData = await res.json()
 
-        // ✅ Truy cập đúng mảng users từ API
-        const userList = Array.isArray(rawData.users) ? rawData.users : []
-
-        const mappedUsers = userList.map((user: any) => ({
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          avatarUrl: user.avatar,
-          isVerified: user.verified,
-          status: user.status,
-          joinDate: user.joinDate || "N/A",
-        }))
-
-        setUsers(mappedUsers)
+        const userList: User[] = Array.isArray(rawData.users) ? rawData.users : []
+        setUsers(userList)
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -48,10 +50,8 @@ export function UserManagement() {
     fetchUsers()
   }, [])
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter((user) =>
+    `${user.name} ${user.email}`.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage)
@@ -75,8 +75,6 @@ export function UserManagement() {
     switch (role.toLowerCase()) {
       case "admin":
         return "bg-purple-100 text-purple-800"
-      case "moderator":
-        return "bg-blue-100 text-blue-800"
       case "author":
         return "bg-orange-100 text-orange-800"
       case "user":
@@ -99,7 +97,7 @@ export function UserManagement() {
       <Card>
         <CardHeader>
           <CardTitle>User List</CardTitle>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mt-4">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
@@ -117,12 +115,12 @@ export function UserManagement() {
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Name</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Email</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Join Date</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
+                  <th className="text-left py-3 px-4">Name</th>
+                  <th className="text-left py-3 px-4">Email</th>
+                  <th className="text-left py-3 px-4">Role</th>
+                  <th className="text-left py-3 px-4">Status</th>
+                  <th className="text-left py-3 px-4">Join Date</th>
+                  <th className="text-left py-3 px-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,16 +132,21 @@ export function UserManagement() {
                   </tr>
                 ) : (
                   currentUsers.map((user) => (
-                    <tr key={user.id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4 font-medium flex items-center gap-2">
-                        {user.avatarUrl && (
-                          <img src={user.avatarUrl} alt={user.name} className="w-6 h-6 rounded-full" />
+                    <tr key={user._id} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-4 flex items-center gap-2 font-medium">
+                        {user.avatar && (
+                          <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
                         )}
                         {user.name}
-                        {user.isVerified && (
+                        {user.verified && (
                           <span title="Verified">
                             <CheckCircle className="h-4 w-4 text-blue-500 ml-1" />
                           </span>
+
                         )}
                       </td>
                       <td className="py-3 px-4 text-gray-600">{user.email}</td>
@@ -153,9 +156,17 @@ export function UserManagement() {
                       <td className="py-3 px-4">
                         <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
                       </td>
-                      <td className="py-3 px-4 text-gray-600">{user.joinDate}</td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {user.joinDate
+                          ? new Date(user.joinDate).toLocaleDateString()
+                          : "N/A"}
+                      </td>
                       <td className="py-3 px-4">
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onViewActivity?.(user._id)}
+                        >
                           View Details
                         </Button>
                       </td>
